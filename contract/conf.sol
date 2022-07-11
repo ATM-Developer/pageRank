@@ -11,6 +11,10 @@ contract Initialize {
     }
 }
 
+interface Isenator{
+    function addSenator(address[] calldata newSenators) external;
+}
+
 contract Conf is Initialize {
     address public owner;
     address public pledge;
@@ -26,6 +30,7 @@ contract Conf is Initialize {
     uint public voteEpoch;
     uint public senatorNum;
     uint public offLine;
+    
 
     modifier onlyOwner(){
         require(msg.sender == owner, "only owner");
@@ -44,5 +49,9 @@ contract Conf is Initialize {
 
     function setSenatorVote(uint _senatorNum, uint _offLine) external onlyOwner {
         (senatorNum, offLine) = (_senatorNum, _offLine);
+    }
+
+    function addSenator(address[] calldata newSenators) external onlyOwner {
+        Isenator(senator).addSenator(newSenators);
     }
 }

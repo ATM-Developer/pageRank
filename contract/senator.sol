@@ -42,11 +42,16 @@ contract senator is Initialize {
         _;
     }
 
+    modifier onlyConf{
+        require(msg.sender == conf);
+        _;
+    }
+
     function initialize(address _conf) external init{
         conf = _conf;
         epochId = 1;
         executerId = 1;
-        (senators,) = Ipledge(Iconf(conf).pledge()).queryNodeRank(1,Iconf(conf).senatorNum());
+        (senators,) = Ipledge(Iconf(conf).pledge()).queryNodeRank(1, Iconf(conf).senatorNum());
         epochIndate = block.timestamp + Iconf(conf).epoch();
         executerIndate = block.timestamp + Iconf(conf).executEpoch();
 
@@ -64,7 +69,7 @@ contract senator is Initialize {
     }
 
     function _getNextExecuter() internal view returns(address) {
-        if (executerIndex == senators.length) return senators[0]; 
+        if (executerIndex == senators.length - 1) return senators[0]; 
         return senators[executerIndex+1];
     }
 
@@ -77,6 +82,12 @@ contract senator is Initialize {
             if (user == senators[i] && i != executerIndex) return true;
         }
         return false;
+    }
+
+    function addSenator(address[] calldata newSenators) external onlyConf{
+        for(uint i=0; i<newSenators.length; i++){
+            senators.push(newSenators[i]);
+        }
     }
 
     function updateSenator() external onlyPoc{
