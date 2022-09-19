@@ -98,9 +98,8 @@ contract Ledger is Initializable, ILedger{
     }
  
     fallback() external{
-
     }
-    
+
     function updateLedger(
         address[] calldata _userAddrs, 
         uint256[] calldata _nonces,
@@ -161,7 +160,7 @@ contract Ledger is Initializable, ILedger{
             }
             _ledgerMsg.dataVotes[_dataFlag]++;
             uint256 _nodeVoteNum = ++_ledgerMsg.nodeVoteNum;
-            if(_nodeVoteNum > 6){
+            if(_nodeVoteNum > 11){
                 _dataRank(_userAddr, _nonce, _ledgerMsg);
             }
         }
@@ -183,10 +182,10 @@ contract Ledger is Initializable, ILedger{
         }
         uint256 _dataFlag = _ledgerMsg.dataIndexFlag[1];
         DataMsg memory _dataMsg = _ledgerMsg.dataFlag[_dataFlag];
-        if(_ledgerMsg.dataVotes[_dataFlag] > 6){
+        if(_ledgerMsg.dataVotes[_dataFlag] > 11){
             _ledgerMsg.consensusSta = true;
             emit UpdateLedger(_userAddr, _nonce, _dataMsg.token, _dataMsg.amount, _dataMsg.txHash);
-        }else if(_ledgerMsg.nodeVoteNum > 8){
+        }else if(_ledgerMsg.nodeVoteNum > 16){
             uint256 _ledgerNum = ++ledgerNum;
             ledgerMsg[_userAddr][_nonce] = _ledgerNum;
             emit UpdateLedgerFail(_userAddr, _nonce, _dataMsg.token, _dataMsg.amount, _dataMsg.txHash);
@@ -209,7 +208,7 @@ contract Ledger is Initializable, ILedger{
         }
         uint256 _nodeVoteNum = ++_nodeMsg.nodeVoteNum;
         _nodeMsg.voteAddrList.push(_sender);
-        if(_nodeVoteNum > 6){
+        if(_nodeVoteNum > 11){
             _nodeRank(_nodeMsg);
         }
     }
@@ -232,7 +231,7 @@ contract Ledger is Initializable, ILedger{
             nodeAddrSta[nodeAddrList[i]] = false;
         }
         delete nodeAddrList;
-        for (uint256 i=1; i < 12; i++){
+        for (uint256 i=1; i < 22; i++){
             nodeAddrList.push(_nodeMsg.nodeIndexAddr[i]);
             nodeAddrSta[_nodeMsg.nodeIndexAddr[i]] = true;
         }
@@ -240,7 +239,7 @@ contract Ledger is Initializable, ILedger{
     }
 
     function _verfyNodes(address[] memory _nodeAddrs) internal {
-        require(_nodeAddrs.length ==11, "The number of nodes must be 11"); 
+        require(_nodeAddrs.length ==21, "The number of nodes must be 21"); 
         uint256 _num= num++;
         for(uint i= 0; i<_nodeAddrs.length; i++){
             require(!status[_num][_nodeAddrs[i]], "A node can only submit once"); 
@@ -284,9 +283,9 @@ contract Ledger is Initializable, ILedger{
     }
 
     function queryNodes() external view returns(address[] memory){
-        address[] memory nodes = new address[](11);
+        address[] memory nodes = new address[](21);
         if(nodeAddrList.length > 0){
-            for (uint256 i = 0; i < 11; i++) {
+            for (uint256 i = 0; i < 21; i++) {
                 nodes[i] = nodeAddrList[i];
             }
         }
